@@ -7,14 +7,8 @@ import {
   UserButton,
   useUser,
 } from '@clerk/nextjs';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
+
+import Breadcrumbs from '@/components/Breadcrumbs';
 
 export default function Header() {
   const { user } = useUser();
@@ -28,13 +22,7 @@ export default function Header() {
         </h1>
       )}
 
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink href='/'>Home</BreadcrumbLink>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+      <Breadcrumbs />
 
       <div>
         <SignedOut>

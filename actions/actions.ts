@@ -14,5 +14,17 @@ export async function createNewDocument() {
     title: 'New Doc',
   });
 
-  await adminDb.collection('users').doc(sessionClaims?.email!);
+  await adminDb
+    .collection('users')
+    .doc(sessionClaims?.email!)
+    .collection('rooms')
+    .doc(docRef.id)
+    .set({
+      userId: sessionClaims?.email!,
+      role: 'owner',
+      createdAt: new Date(),
+      roomId: docRef.id,
+    });
+
+  return { docId: docRef.id };
 }
