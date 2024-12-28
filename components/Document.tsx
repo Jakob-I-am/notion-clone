@@ -6,14 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { db } from '@/firebase';
 
-interface DocumentProps {
-  id: string | string[] | undefined;
-}
-
-export default function Document({ id }: DocumentProps) {
-  const [data, loading, error] = useDocumentData(
-    doc(db, 'documents', id as string)
-  );
+export default function Document({ id }: { id: string }) {
+  const [data, loading, error] = useDocumentData(doc(db, 'documents', id));
   const [input, setInput] = useState<string>('');
   const [isUpdating, startTransition] = useTransition();
   // const isOwner = useOwner();
@@ -29,7 +23,7 @@ export default function Document({ id }: DocumentProps) {
 
     if (input.trim()) {
       startTransition(async () => {
-        await updateDoc(doc(db, 'documents', id as string), {
+        await updateDoc(doc(db, 'documents', id), {
           title: input,
         });
       });
