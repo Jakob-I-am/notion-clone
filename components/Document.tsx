@@ -4,13 +4,17 @@ import { useDocumentData } from 'react-firebase-hooks/firestore';
 
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import Editor from '@/components/Editor';
 import { db } from '@/firebase';
+import useOwner from '@/lib/useOwner';
+import DeleteDocument from '@/components/DeleteDocument';
+import InviteUser from '@/components/InviteUser';
 
 export default function Document({ id }: { id: string }) {
   const [data, loading, error] = useDocumentData(doc(db, 'documents', id));
   const [input, setInput] = useState<string>('');
   const [isUpdating, startTransition] = useTransition();
-  // const isOwner = useOwner();
+  const isOwner = useOwner();
 
   useEffect(() => {
     if (!loading && data) {
@@ -31,7 +35,7 @@ export default function Document({ id }: { id: string }) {
   };
 
   return (
-    <div>
+    <div className='flex-1 h-full bg-white p-5'>
       <div className='flex max-w-6xl mx-auto justify-between pb-5'>
         <form
           onSubmit={updateTitle}
@@ -47,6 +51,13 @@ export default function Document({ id }: { id: string }) {
           >
             {isUpdating ? 'Updating...' : 'Update'}
           </Button>
+
+          {isOwner && (
+            <>
+              <InviteUser />
+              <DeleteDocument />
+            </>
+          )}
         </form>
       </div>
 
@@ -56,7 +67,9 @@ export default function Document({ id }: { id: string }) {
         {/* Avatars */}
       </div>
 
-      {/* Collabrative Editor */}
+      <hr className='pb-10' />
+
+      <Editor />
     </div>
   );
 }
