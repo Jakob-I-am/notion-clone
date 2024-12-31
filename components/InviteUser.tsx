@@ -1,43 +1,43 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { FormEvent, useState, useTransition } from 'react';
 import { useRoom } from '@liveblocks/react';
-import { useRouter } from 'next/navigation';
 
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { deleteDocument } from '@/actions/actions';
+import { Input } from '@/components/ui/input';
+import { inviteUserToDocument } from '@/actions/actions';
 
 export default function InviteUser() {
   const [isOpen, setIsOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [email, setEmail] = useState<string>('');
   const room = useRoom();
-  const router = useRouter();
 
-  const handleDelete = async () => {
-    if (!room) {
+  const handleInvite = async (e: FormEvent) => {
+    e.preventDefault();
+
+    if (!room.id) {
       return;
     }
 
     startTransition(async () => {
-      const { success } = await deleteDocument(room.id);
+      const { success } = await inviteUserToDocument(room.id, email);
 
       if (success) {
         setIsOpen(false);
-        router.replace('/');
-        toast.success('Document deleted successfully');
+        setEmail('');
+        toast.success('User added to room successfully');
       } else {
-        toast.error('An error occurred while deleting the document');
+        toast.error('Failed to add User to room');
       }
     });
   };
@@ -49,40 +49,42 @@ export default function InviteUser() {
     >
       <Button
         asChild
-        variant='secondary'
+        variant='outline'
       >
         <DialogTrigger>Invite</DialogTrigger>
       </Button>
 
       <DialogContent className='bg-white'>
         <DialogHeader>
-          <DialogTitle>You are about to delete this document!</DialogTitle>
+          <DialogTitle>Invite a User to collaborate!</DialogTitle>
           <DialogDescription>
-            This action cannot be undone. This will permanently delete your
-            document and all of its contents, removing all users from the
-            document and all of your data from our servers.
+            Enter the email of the user you want to invite.
           </DialogDescription>
         </DialogHeader>
 
-        <DialogFooter>
-          <Button
-            type='button'
-            variant='destructive'
-            onClick={handleDelete}
-            disabled={isPending}
-          >
-            {isPending ? 'Deleting...' : 'Delete'}
-          </Button>
+        <form
+          className='flex flex-col'
+          onSubmit={handleInvite}
+        >
+          <label className='text-sm pb-2 text-gray-400'>Email</label>
+          <div className='flex gap-2'>
+            <Input
+              placeholder='johncitizen@example.com'
+              type='email'
+              className='w-full'
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
 
-          <DialogClose asChild>
             <Button
-              type='button'
-              variant='secondary'
+              disabled={!email || isPending}
+              type='submit'
+              variant='outline'
             >
-              Cancel
+              {isPending ? 'Inviting...' : 'Invite'}
             </Button>
-          </DialogClose>
-        </DialogFooter>
+          </div>
+        </form>
       </DialogContent>
     </Dialog>
   );
