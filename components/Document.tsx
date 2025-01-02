@@ -9,6 +9,7 @@ import { db } from '@/firebase';
 import useOwner from '@/lib/useOwner';
 import DeleteDocument from '@/components/DeleteDocument';
 import InviteUser from '@/components/InviteUser';
+import ManageUsers from '@/components/ManageUsers';
 
 export default function Document({ id }: { id: string }) {
   const [data, loading, error] = useDocumentData(doc(db, 'documents', id));
@@ -61,9 +62,8 @@ export default function Document({ id }: { id: string }) {
         </form>
       </div>
 
-      <div>
-        {/* Manage Users */}
-
+      <div className='flex max-w-6xl mx-auto justify-between items-center mb-5'>
+        <ManageUsers />
         {/* Avatars */}
       </div>
 
