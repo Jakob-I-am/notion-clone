@@ -78,3 +78,21 @@ export async function inviteUserToDocument(roomId: string, email: string) {
     return { success: false };
   }
 }
+
+export async function removeUserFromDocument(roomId: string, userId: string) {
+  auth.protect();
+
+  try {
+    await adminDb
+      .collection('users')
+      .doc(userId)
+      .collection('rooms')
+      .doc(roomId)
+      .delete();
+
+    return { success: true };
+  } catch (error) {
+    console.error(error);
+    return { success: false };
+  }
+}

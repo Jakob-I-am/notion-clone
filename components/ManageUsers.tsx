@@ -5,9 +5,11 @@ import { useUser } from '@clerk/nextjs';
 import { useRoom } from '@liveblocks/react';
 import { collectionGroup, query, where } from 'firebase/firestore';
 import { useCollection } from 'react-firebase-hooks/firestore';
+import { toast } from 'sonner';
 
 import useOwner from '@/lib/useOwner';
 import { db } from '@/firebase';
+import { removeUserFromDocument } from '@/actions/actions';
 import {
   Dialog,
   DialogContent,
@@ -29,7 +31,17 @@ export default function ManageUsers() {
   );
 
   const handleDelete = (userId: string) => {
-    startTransition(async () => {});
+    startTransition(async () => {
+      if (!user) return;
+
+      const { success } = await removeUserFromDocument(room.id, userId);
+
+      if (success) {
+        toast.success('User removed from room successfully');
+      } else {
+        toast.error('Failed to remove User from room');
+      }
+    });
   };
 
   return (
@@ -54,7 +66,7 @@ export default function ManageUsers() {
 
         <hr className='my-2' />
 
-        <div>
+        <div className='flex flex-col space-y-2'>
           {usersInRoom?.docs.map((doc) => (
             <div
               className='flex items-center justify-between'
